@@ -1,39 +1,28 @@
-// Extension event listeners are a little different from the patterns you may have seen in DOM or
-// Node.js APIs. The below event listener registration can be broken in to 4 distinct parts:
-//
-// * chrome      - the global namespace for Chrome's extension APIs
-// * runtime     – the namespace of the specific API we want to use
-// * onInstalled - the event we want to subscribe to
-// * addListener - what we want to do with this event
-//
-// See https://developer.chrome.com/docs/extensions/reference/events/ for additional details.
-const myURLs = [ 'www.netflix.com' ];
-chrome.runtime.onInstalled.addListener(async () => {
-
-    // While we could have used `let url = "hello.html"`, using runtime.getURL is a bit more robust as
-    // it returns a full URL rather than just a path that Chrome needs to be resolved contextually at
-    // runtime.
-    let url = chrome.runtime.getURL("hello.html");
+  chrome.runtime.onInstalled.addListener(function () {
+    chrome.storage.local.get(["blocked", "enabled"], function (local) {
+      if (!Array.isArray(local.blocked)) {
+        chrome.storage.local.set({ blocked: [] });
+      }
   
-    // Open a new tab pointing at our page's URL using JavaScript's object initializer shorthand.
-    // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Object_initializer#new_notations_in_ecmascript_2015
-    //
-    // Many of the extension platform's APIs are asynchronous and can either take a callback argument
-    // or return a promise. Since we're inside an async function, we can await the resolution of the
-    // promise returned by the tabs.create call. See the following link for more info on async/await.
-    // https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Asynchronous/Async_await
-    let tab = await chrome.tabs.create({ url });
-  
-    // Finally, let's log the ID of the newly created tab using a template literal.
-    // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals
-    //
-    // To view this log message, open chrome://extensions, find "Hello, World!", and click the
-    // "service worker" link in th card to open DevTools.
-    console.log(`Created tab ${tab.id}`);
+      if (typeof local.enabled !== "boolean") {
+        chrome.storage.local.set({ enabled: false });
+      }
+    });
   });
-
-chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-  if (changeInfo.status == 'complete' && myURLs.some(url => tab.url.includs(url))) {
-    chrome.runtime.getURL("hello.html");
-  }
-})
+  
+  chrome.tabs.onUpdated.addListener(function (tabId, changeInfo) {
+    const url = changeInfo.pendingUrl || changeInfo.url;
+    if (!url || !url.startsWith("http")) {
+      return;
+    }
+  
+    const hostname = new URL(url).hostname;
+  
+    chrome.storage.local.get(["blocked", "enabled"], function (local) {
+      const { blocked, enabled } = local;
+      if (Array.isArray(blocked) && enabled && blocked.find(domain => hostname.includes(domain))) {
+        chrome.tabs.remove(tabId);
+        alert(`Sorry friend, you've told me to keep you from yourself until your work is done. You got this though! And you can come talk to me to give permissions back.`);
+      }
+    });
+  });

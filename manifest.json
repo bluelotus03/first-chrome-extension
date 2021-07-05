@@ -3,15 +3,17 @@
     "name": "Focus Buddy",
     "description": "The most popular movies and TV shows in your default tab. Includes ratings, summaries and the ability to watch trailers.",
     "version": "1",
+    "options_page": "options.html",
     "author": "Jake Prins",
     "permissions": [
         "tabs",
-        "*://www.netflix.com/*"
+        "*://www.netflix.com/*",
+        "storage"
     ],
-    "content_scripts": [
-        {
-            "matches": ["*://www.netflix.com/*"],
-            "js": ["hello.js"]
-        }
-    ]
+    "background": {
+        "scripts": [
+            "background.js"
+        ],
+        "persistent": false
+    }
 }
