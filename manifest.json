@@ -1,0 +1,17 @@
+{
+    "manifest_version": 2,
+    "name": "Focus Buddy",
+    "description": "The most popular movies and TV shows in your default tab. Includes ratings, summaries and the ability to watch trailers.",
+    "version": "1",
+    "author": "Jake Prins",
+    "permissions": [
+        "tabs",
+        "*://www.netflix.com/*"
+    ],
+    "content_scripts": [
+        {
+            "matches": ["*://www.netflix.com/*"],
+            "js": ["hello.js"]
+        }
+    ]
+}
