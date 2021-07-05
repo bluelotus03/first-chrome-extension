@@ -2,6 +2,9 @@
 
 This project was completed for MLH INIT's challenge "Create a Chrome Extension"
 
+## See a demo:
+### https://youtu.be/C07I7aws8Qw
+
 ## Tutorial
 
 We followed a tutorial from this site for the blocking portion of the extension
