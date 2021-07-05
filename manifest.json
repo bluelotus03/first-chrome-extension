@@ -4,7 +4,7 @@
     "description": "The most popular movies and TV shows in your default tab. Includes ratings, summaries and the ability to watch trailers.",
     "version": "1",
     "options_page": "options.html",
-    "author": "Jake Prins",
+    "author": "lil-p3tri3 and elreydetoda",
     "permissions": [
         "tabs",
         "*://www.netflix.com/*",
